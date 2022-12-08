@@ -1,8 +1,9 @@
 from PIL import Image
 import os
+import sys
 
 dir = os.getcwd()
-img = Image.open(dir+'/bg_construct.png')
+img = Image.open(dir+'/'+ sys.argv[1])
 
 for i in range(0, 251, 25): #for multiple iteration
     thresh = i
