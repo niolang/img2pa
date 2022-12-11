@@ -10,7 +10,11 @@ fullname = dir + '/' + sys.argv[1].split(".")[0]
 def bwimg(threshold, full_path):
     fn = lambda x : 255 if x > threshold else 0
     r = img.convert('L').point(fn, mode='1')
-    r.save(full_path + '_' + str(threshold) + '.png')
+    basewidth = int(sys.argv[5])
+    wpercent = (basewidth/float(img.size[0]))
+    hsize = int((float(img.size[1])*float(wpercent)))
+    s = r.resize((basewidth,hsize), Image.Resampling.LANCZOS)
+    s.save(full_path + '_' + str(threshold) + '.png')
 
 #Help
 if "-h" in str(sys.argv):
@@ -31,3 +35,4 @@ elif "-i" in str(sys.argv):
 
 else:
     exit()
+
