@@ -2,32 +2,38 @@ from PIL import Image
 import os
 import sys
 
-#git image file you want to use
-dir = os.getcwd()
-img = Image.open(dir+'/'+ sys.argv[1])
-fullname = dir + '/' + sys.argv[1].split(".")[0]
+import argparse
 
-def bwimg(threshold, full_path):
+
+def Main():
+    #arg Parser ----------------------------
+    parser=argparse.ArgumentParser(description="Turns each pixel of the image to black or white - depending on the chosen threshold")
+
+    parser.add_argument('filename', type=str, help='Enter file name, including exstension')
+
+    group=parser.add_mutually_exclusive_group()
+    group.add_argument('-t', '--threshold', type=int, help='Enter threshold value : between 0(full white) and 255(full black)')
+    group.add_argument('-i', '--iteration', type=int, help='Enter iteration value : images will be created for each i iteration')
+
+    args: Namespace = parser.parse_args()
+
+    #Image file you want to use -----------
+    dir = os.getcwd()
+    img = Image.open(dir+'/'+ args.filename)
+    fullname = dir + '/' + args.filename.split(".")[0]
+
+    #Picture manipulation
+    if args.threshold is not None:
+        bwimg(int(args.threshold), fullname, img)
+    else:
+        for i in range(0, 255, args.iteration):
+            bwimg(i, fullname, img)
+
+
+def bwimg(threshold, full_path, picture):
     fn = lambda x : 255 if x > threshold else 0
-    r = img.convert('L').point(fn, mode='1')
+    r = picture.convert('L').point(fn, mode='1')
     r.save(full_path + '_' + str(threshold) + '.png')
 
-#Help
-if "-h" in str(sys.argv):
-    print("You asked for help with -h, for threshold use -t <value>, for iteration -i <value>")
-    print(fullname)
-    exit()
-
-#Create 1 b&w image with 1 threshold
-elif "-t" in str(sys.argv):
-    bwimg(int(sys.argv[3]), fullname)
-    exit()
-
-#Create multiple images with iterations as thresholds
-elif "-i" in str(sys.argv):
-    for i in range(0, 255, int(sys.argv[3])): #for multiple iteration
-        bwimg(i, fullname)
-    exit()
-
-else:
-    exit()
+if __name__ == '__main__':
+    Main()
